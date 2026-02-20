@@ -1,0 +1,123 @@
+INSERT INTO public.users
+(
+    id,
+    email,
+    username,
+    hashed_password,
+    first_name,
+    last_name,
+    phone_number,
+    is_active,
+    is_verified,
+    is_superuser,
+    created_at,
+    updated_at
+)
+VALUES
+-- Admin user
+(
+    gen_random_uuid(),
+    'jmooreweb@gmail.com',
+    'admin',
+    '$2b$12$examplehashedpasswordadmin',
+    'System',
+    'Administrator',
+    '321-474-2919',
+    TRUE,
+    TRUE,
+    TRUE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+
+-- Manager
+(
+    gen_random_uuid(),
+    'manager@company.com',
+    'manager',
+    '$2b$12$examplehashedpasswordmanager',
+    'Olivia',
+    'Parker',
+    '813-555-0002',
+    TRUE,
+    TRUE,
+    FALSE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+
+-- Standard users
+(
+    gen_random_uuid(),
+    'james.moore@company.com',
+    'jmoore',
+    '$2b$12$examplehashedpassword1',
+    'James',
+    'Moore',
+    '813-555-0003',
+    TRUE,
+    TRUE,
+    FALSE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+(
+    gen_random_uuid(),
+    'sarah.johnson@company.com',
+    'sjohnson',
+    '$2b$12$examplehashedpassword2',
+    'Sarah',
+    'Johnson',
+    '813-555-0004',
+    TRUE,
+    FALSE,
+    FALSE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+(
+    gen_random_uuid(),
+    'michael.smith@company.com',
+    'msmith',
+    '$2b$12$examplehashedpassword3',
+    'Michael',
+    'Smith',
+    '813-555-0005',
+    TRUE,
+    TRUE,
+    FALSE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+
+-- Viewer
+(
+    gen_random_uuid(),
+    'viewer@company.com',
+    'viewer1',
+    '$2b$12$examplehashedpassword4',
+    'Emily',
+    'Davis',
+    '813-555-0006',
+    TRUE,
+    TRUE,
+    FALSE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+),
+
+-- Auditor
+(
+    gen_random_uuid(),
+    'auditor@company.com',
+    'auditor1',
+    '$2b$12$examplehashedpassword5',
+    'Robert',
+    'Wilson',
+    '813-555-0007',
+    TRUE,
+    TRUE,
+    FALSE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);

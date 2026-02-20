@@ -1,0 +1,43 @@
+name: fastapi-demo
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn src.main:app --host localhost --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/cleanfastapi
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+    networks:
+      - appnet
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: cleanfastapi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata18:/var/lib/postgresql
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cleanfastapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+networks:
+  appnet:
+
+volumes:
+  pgdata18:

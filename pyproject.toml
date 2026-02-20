@@ -1,0 +1,19 @@
+[project]
+name = "tasks-api"
+version = "1.0.0"
+requires-python = ">=3.14"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.1",          # PostgreSQL driver
+  "alembic>=1.13",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "python-jose[cryptography]>=3.3",
+  "passlib[bcrypt]>=1.7",
+  "python-multipart>=0.0.9"        # for OAuth2 form login
+]
+
+[tool.uvicorn]
+factory = false
