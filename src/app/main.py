@@ -15,7 +15,6 @@ def create_app() -> FastAPI:
     api = FastAPI(
         title="Task Management API", 
         version="1.0.0",
-        prefix="/api/v1",
         description="A simple task management API built with FastAPI, SQLAlchemy, PostgreSQL, and JWT authentication.",
         docs_url="/docs" if settings.ENV != "prod" else None,
         redoc_url="/redoc" if settings.ENV != "prod" else None,
@@ -33,7 +32,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )   
      
-    api.include_router(api_router)
+    api.include_router(api_router, prefix="/api/v1")
     
     return api
 

@@ -16,8 +16,25 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email or username already exists")
     return crud_user.create(db, payload)
 
-@router.post("/token", response_model=Token, description="Obtain an access token by providing username/email and password.")
-def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+# @router.post("/token", response_model=Token, description="Obtain an access token by providing username/email and password.")
+# def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+#     # OAuth2PasswordRequestForm uses: username + password (we accept username OR email in username field)
+#     u = crud_user.get_by_username(db, form.username) or crud_user.get_by_email(db, form.username)
+#     if not u or not verify_password(form.password, u.hashed_password):
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+#     token = create_access_token(subject=str(u.id))
+#     return Token(access_token=token)
+
+@router.post("/token", response_model=Token)
+async def token(form_data: OAuth2PasswordRequestForm = Depends()):
+    return await login_core(form_data)
+
+
+@router.post("/login", response_model=Token)
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    return await login_core(form_data)
+
+async def login_core(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # OAuth2PasswordRequestForm uses: username + password (we accept username OR email in username field)
     u = crud_user.get_by_username(db, form.username) or crud_user.get_by_email(db, form.username)
     if not u or not verify_password(form.password, u.hashed_password):
