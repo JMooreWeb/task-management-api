@@ -8,7 +8,9 @@ from app.crud import user as crud_user
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.auth import Token
 
-router = APIRouter(tags=["Authentication"])
+
+router = APIRouter(prefix="/auth", tags=["Authentication"])
+
 
 @router.post("/register", response_model=UserOut, status_code=201, description="Register a new user by providing email, username, password, and optional profile information.")
 def register(payload: UserCreate, db: Session = Depends(get_db)):
@@ -16,30 +18,23 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email or username already exists")
     return crud_user.create(db, payload)
 
-# @router.post("/token", response_model=Token, description="Obtain an access token by providing username/email and password.")
-# def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-#     # OAuth2PasswordRequestForm uses: username + password (we accept username OR email in username field)
-#     u = crud_user.get_by_username(db, form.username) or crud_user.get_by_email(db, form.username)
-#     if not u or not verify_password(form.password, u.hashed_password):
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-#     token = create_access_token(subject=str(u.id))
-#     return Token(access_token=token)
-
 
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    return await login_core(form_data)
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    return login_core(form_data, db)
 
 
 @router.post("/token", response_model=Token, include_in_schema=False)
-async def token(form_data: OAuth2PasswordRequestForm = Depends()):
-    return await login_core(form_data)
+def token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    return login_core(form_data, db)
 
 
-async def login_core(form: OAuth2PasswordRequestForm, db: Session):
-    # OAuth2PasswordRequestForm uses: username + password (we accept username OR email in username field)
-    u = crud_user.get_by_username(db, form.username) or crud_user.get_by_email(db, form.username)
-    if not u or not verify_password(form.password, u.hashed_password):
+def login_core(form: OAuth2PasswordRequestForm, db: Session) -> Token:
+    user = crud_user.get_by_username(db, form.username) or \
+           crud_user.get_by_email(db, form.username)
+        
+    if not user or not verify_password(form.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    token = create_access_token(subject=str(u.id))
+
+    token = create_access_token(subject=str(user.id))
     return Token(access_token=token)
