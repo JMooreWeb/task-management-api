@@ -9,7 +9,7 @@ from app.schemas.role import RoleOut
 from app.schemas.user_role import AssignRoleIn, UserRoleOut
 from app.crud import user_role as crud_user_role
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/me/roles", response_model=list[RoleOut], description="List all roles assigned to the current user.")
@@ -20,7 +20,7 @@ def my_roles(
     return crud_user_role.list_roles_for_user(db, user.id)
 
 
-@router.get("/users/{user_id}/roles", response_model=list[RoleOut], description="List all roles assigned to a specific user.")
+@router.get("/{user_id}/roles", response_model=list[RoleOut], description="List all roles assigned to a specific user.")
 def list_roles_for_user(
     user_id: uuid.UUID,
     db: Session = Depends(get_db),
@@ -29,7 +29,7 @@ def list_roles_for_user(
     return crud_user_role.list_roles_for_user(db, user_id)
 
 
-@router.post("/users/{user_id}/roles", response_model=UserRoleOut, status_code=status.HTTP_201_CREATED, description="Assign a role to a specific user.")
+@router.post("/{user_id}/roles", response_model=UserRoleOut, status_code=status.HTTP_201_CREATED, description="Assign a role to a specific user.")
 def assign_role_to_user(
     user_id: uuid.UUID,
     payload: AssignRoleIn,
@@ -47,7 +47,7 @@ def assign_role_to_user(
         raise
 
 
-@router.delete("/users/{user_id}/roles/{role_id}", status_code=status.HTTP_204_NO_CONTENT, description="Remove a role from a specific user.")
+@router.delete("/{user_id}/roles/{role_id}", status_code=status.HTTP_204_NO_CONTENT, description="Remove a role from a specific user.")
 def remove_role_from_user(
     user_id: uuid.UUID,
     role_id: uuid.UUID,

@@ -7,16 +7,16 @@ from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate, TaskOut
 from app.crud import task as crud_task
 
-router = APIRouter()
+router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
-@router.get("/", response_model=list[TaskOut], description="List all tasks belonging to the current user.")
+@router.get("", response_model=list[TaskOut], description="List all tasks belonging to the current user.")
 def list_tasks(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
     return crud_task.list_for_user(db, user.id)
 
-@router.post("/", response_model=TaskOut, status_code=201, description="Create a new task for the current user.")
+@router.post("", response_model=TaskOut, status_code=201, description="Create a new task for the current user.")
 def create_task(
     payload: TaskCreate,
     db: Session = Depends(get_db),

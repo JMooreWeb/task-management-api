@@ -7,10 +7,10 @@ from app.core.admin import require_admin
 from app.schemas.role import RoleCreate, RoleUpdate, RoleOut
 from app.crud import role as crud_role
 
-router = APIRouter()
+router = APIRouter(prefix="/roles", tags=["Roles"])
 
 
-@router.get("/", response_model=list[RoleOut], description="Retrieve a list of all roles in the system.")
+@router.get("", response_model=list[RoleOut], description="Retrieve a list of all roles in the system.")
 def list_roles(db: Session = Depends(get_db)):
     return crud_role.list_roles(db)
 
@@ -23,7 +23,7 @@ def get_role(role_id: uuid.UUID, db: Session = Depends(get_db)):
     return role
 
 
-@router.post("/", response_model=RoleOut, status_code=status.HTTP_201_CREATED, description="Create a new role.")
+@router.post("", response_model=RoleOut, status_code=status.HTTP_201_CREATED, description="Create a new role.")
 def create_role(payload: RoleCreate, db: Session = Depends(get_db), _admin=Depends(require_admin)):
     if crud_role.get_by_name(db, payload.name):
         raise HTTPException(status_code=400, detail="Role already exists")

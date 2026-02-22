@@ -8,7 +8,7 @@ from app.crud import user as crud_user
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.auth import Token
 
-router = APIRouter()
+router = APIRouter(tags=["Authentication"])
 
 @router.post("/register", response_model=UserOut, status_code=201, description="Register a new user by providing email, username, password, and optional profile information.")
 def register(payload: UserCreate, db: Session = Depends(get_db)):
@@ -25,16 +25,18 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 #     token = create_access_token(subject=str(u.id))
 #     return Token(access_token=token)
 
-@router.post("/token", response_model=Token)
-async def token(form_data: OAuth2PasswordRequestForm = Depends()):
-    return await login_core(form_data)
-
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return await login_core(form_data)
 
-async def login_core(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+
+@router.post("/token", response_model=Token, include_in_schema=False)
+async def token(form_data: OAuth2PasswordRequestForm = Depends()):
+    return await login_core(form_data)
+
+
+async def login_core(form: OAuth2PasswordRequestForm, db: Session):
     # OAuth2PasswordRequestForm uses: username + password (we accept username OR email in username field)
     u = crud_user.get_by_username(db, form.username) or crud_user.get_by_email(db, form.username)
     if not u or not verify_password(form.password, u.hashed_password):
